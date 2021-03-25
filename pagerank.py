@@ -3,7 +3,7 @@ import random
 import re
 import sys
 from typing import Counter
-import copy
+import math
 
 DAMPING = 0.85
 SAMPLES = 10000
@@ -149,7 +149,6 @@ def iterate_pagerank(corpus, damping_factor):
     while True:        
         # Loop over every link
         for key in prev_results:
-            
             # Calculate the sum
             sum = 0
             # Loop over every link
@@ -165,17 +164,17 @@ def iterate_pagerank(corpus, damping_factor):
             
             # Update PR
             results[key] = ((1 - damping_factor) / len(corpus)) + (damping_factor * sum)
-
-
+            # Truncate the numbers to 4 decimals
+            x = math.trunc(results[key] * (10**4)) / 10**4
+            y = math.trunc(prev_results[key] * (10**4)) / 10**4
             # Check if the difference between new PR and previous one are less than 0.001
-            if abs(results[key] - prev_results[key]) <= 0.001:
+            if math.trunc(abs(x - y) * 10**3) <= 1:
                 # Add to the counter to check if to break
                 breaker += 1
-    
         # If the counter is equal to the length of the corpus, meaning, if every PR(key) of the corpus has a difference of 0.001 or less
         # with its previous PR
         if breaker == len(corpus):
-            print(counter)
+            #print(counter)
             return results
         else:
         # If not every key has a difference between its current PR and the previous equal or less to 0.001, then reset the counter    
